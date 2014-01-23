@@ -4,7 +4,7 @@ MockLocation Stream
 The app receives a JSON message via TCP socket and updates the device location using MockLocation API.
 
 
-Usage:
+**Usage:**
 
 After opening the app press the start button to start the socket. Then just send JSON formatted strings according to the format:
 
