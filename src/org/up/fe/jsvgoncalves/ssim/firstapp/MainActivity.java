@@ -32,7 +32,9 @@ import android.util.Log;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements
-	ConnectionCallbacks, OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
+	ConnectionCallbacks, OnConnectionFailedListener, com.google.android.gms.location.LocationListener, LocationListener {
+
+	public static final String LOG_TAG = "mylog";
 
 	// The name used for all mock locations
     public static final String LOCATION_PROVIDER = "fused";
@@ -61,20 +63,25 @@ public class MainActivity extends Activity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        System.err.println(Utils.getIPAddress(true));
         
         // Start the socket communication
         new RetrievePositionTask().execute();
 
-        
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+    	String mocLocationProvider = LocationManager.GPS_PROVIDER;
+    	locationManager.addTestProvider(mocLocationProvider, false, false,
+    			false, false, true, false, false, 0, 5);
+    	locationManager.setTestProviderEnabled(mocLocationProvider, true);
+    	locationManager.requestLocationUpdates(mocLocationProvider, 0, 0, this);
+    	
         try {
-	        mLocationRequest = LocationRequest.create();
-	        mLocationRequest.setInterval(1000);
-	        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-	        mLocationRequest.setFastestInterval(1000);
-
-	        mLocationClient = new LocationClient(this, this, this);
-	        mLocationClient.connect();
+//	        mLocationRequest = LocationRequest.create();
+//	        mLocationRequest.setInterval(1000);
+//	        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//	        mLocationRequest.setFastestInterval(1000);
+//
+//	        mLocationClient = new LocationClient(this, this, this);
+//	        mLocationClient.connect();
         } catch (Exception e) {
         	e.printStackTrace();
         }
@@ -92,11 +99,37 @@ public class MainActivity extends Activity implements
     	String lat = JSONHelper.getValue(json, "latitude");
     	String lon = JSONHelper.getValue(json, "longitude");
     	t.setText(lat + ", " + lon);
-    	setCustomLocation(lat, lon);
-    	Log.d("mylog", "setted temp location");
+    	//setCustomLocation(lat, lon);
+    	setMockLocation(lat,lon);
+    	Log.d(LOG_TAG, "setted temp location");
     } 	
     
-    class RetrievePositionTask extends AsyncTask<String, String, String> {
+    
+    
+    private void setMockLocation(String lat, String lon) {
+    	double latitude = Double.parseDouble(lat);
+    	double longitude = Double.parseDouble(lon);
+
+    	Location location = new Location(LocationManager.GPS_PROVIDER);
+    	long elapsedTimeNanos = SystemClock.elapsedRealtimeNanos();
+        long currentTime = System.currentTimeMillis();
+        
+        location.setElapsedRealtimeNanos(elapsedTimeNanos);
+        location.setTime(currentTime);
+        location.setAccuracy(16f);
+        location.setAltitude(0d);
+        location.setBearing(0f);
+		location.setLatitude(latitude);
+		location.setLongitude(longitude);
+		
+		// provide the new location
+		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, location);
+	}
+
+
+
+	class RetrievePositionTask extends AsyncTask<String, String, String> {
 
     	protected String doInBackground(String... urls) {
     		try {
@@ -139,7 +172,7 @@ public class MainActivity extends Activity implements
 				 mLocationClient.requestLocationUpdates(mLocationRequest, this);
 //				 setCustomLocation();
 			 }
-			Log.d("mylog", "Mocks connected.");
+			Log.d(LOG_TAG, "Mocks connected.");
 	    } catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -167,16 +200,16 @@ public class MainActivity extends Activity implements
 		newLocation.setAltitude(0d);
 		newLocation.setBearing(0f);
 		mLocationClient.setMockLocation(newLocation);
-		Log.d("mylog", "Setting mock location " + newLocation.getLatitude() + " , " + newLocation.getLongitude());
+		Log.d(LOG_TAG, "Setting mock location " + newLocation.getLatitude() + " , " + newLocation.getLongitude());
 		
 		/** 
 		 * Calculate distances and speeds
 		 */
 		if(previousLoc != null) {
 			float newDistance = previousLoc.distanceTo(newLocation)/1000;
-			Log.d("mylog", "This distance: " + newDistance + "m");
+			Log.d(LOG_TAG, "This distance: " + newDistance + "m");
 			totalDistance  += newDistance;
-			Log.d("mylog", "Speed: " + newLocation.getSpeed());
+			Log.d(LOG_TAG, "Speed: " + newLocation.getSpeed());
 			
 			if(lastTime != 0){
 				float timeSpan = currentTime - lastTime;
@@ -214,12 +247,37 @@ public class MainActivity extends Activity implements
 
         // Disconnect from Location Services
         mLocationClient.disconnect();
+        
+        super.onDestroy();
+
+        // remove it from the location manager
+    	try {
+    		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//    		locationManager.removeTestProvider(MockGpsProvider.GPS_MOCK_PROVIDER);
+    	}
+    	catch (Exception e) {}
 	}
 
 	@Override
 	public void onLocationChanged(Location location) {
 		// TODO Auto-generated method stub
-		Log.d("mylog", "The location has changed: "  + location.getLatitude() + " , " + location.getLongitude());
+		Log.d(LOG_TAG, "The location has changed: "  + location.getLatitude() + " , " + location.getLongitude());
+	}
+	
+	@Override
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+		
 	}
 	   
 }
