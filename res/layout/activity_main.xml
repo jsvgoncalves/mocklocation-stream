@@ -1,0 +1,91 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".MainActivity" >
+
+    <!-- Left Panel -->
+    <LinearLayout android:layout_width="250dp"
+	    android:layout_height="fill_parent"
+	    android:paddingLeft="0dp"
+	    android:paddingRight="0dp"
+	    android:orientation="vertical"
+	    android:background="@color/panel_color">
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_horizontal"
+	        android:paddingTop="20dp"
+	        android:text="@string/statistics"
+	        android:textColor="@android:color/white"
+	        android:textSize="40sp"
+	        android:textStyle="bold"/>
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="left"
+	        android:paddingTop="20dp"
+	        android:paddingLeft="10dp"
+	        android:text="@string/distance"
+	        android:textColor="@android:color/white"
+	        android:textSize="30sp"/>
+	    <TextView
+	        android:id="@+id/distance"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="left"
+	        android:paddingTop="10dp"
+	        android:paddingLeft="20dp"
+	        android:text="@string/km"
+	        android:textColor="@android:color/white"
+	        android:textSize="30sp"
+	        android:textStyle="bold"/>
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="left"
+	        android:paddingTop="20dp"
+	        android:paddingLeft="10dp"
+	        android:text="@string/avgspeed"
+	        android:textColor="@android:color/white"
+	        android:textSize="30sp"/>
+	    <TextView
+	        android:id="@+id/avgspeed"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="left"
+	        android:paddingTop="10dp"
+	        android:paddingLeft="20dp"
+	        android:text="@string/kmh"
+	        android:textColor="@android:color/white"
+	        android:textSize="30sp"
+	        android:textStyle="bold"/>
+    </LinearLayout>
+    
+    <!-- Right Panel -->
+    <LinearLayout android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:paddingTop="0dp"
+	    android:orientation="vertical">
+	        <TextView
+	        android:id="@+id/currentSpeedTextView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="25dp"
+	        android:textSize="70sp"
+	        android:layout_gravity="center_horizontal"
+	        android:text="@string/kmh"/>
+	        
+	        <ImageView
+		      android:id="@+id/cbNextPicView"
+		      android:layout_width="wrap_content"
+		      android:layout_height="wrap_content"
+		      android:layout_gravity="center_horizontal"
+		      android:paddingTop="70dp"
+		      android:src="@drawable/speed_50"
+		    />
+    </LinearLayout>
+   
+
+</LinearLayout>

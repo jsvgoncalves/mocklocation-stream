@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".MainActivity" >
+
+    <!-- Left Panel -->
+    <LinearLayout android:layout_width="250dp"
+	    android:layout_height="fill_parent"
+	    android:paddingLeft="0dp"
+	    android:paddingRight="0dp"
+	    android:orientation="vertical"
+	    android:background="@color/panel_color">
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_horizontal"
+	        android:paddingTop="20dp"
+	        android:text="@string/properties"
+	        android:textColor="@android:color/white"
+	        android:textSize="40sp"
+	        android:textStyle="bold"/>
+	    <TextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="left"
+	        android:paddingTop="20dp"
+	        android:paddingLeft="10dp"
+	        android:text="@string/ip"
+	        android:textColor="@android:color/white"
+	        android:textSize="30sp"/>
+	    <TextView
+	        android:id="@+id/ipTextView"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="left"
+	        android:paddingTop="10dp"
+	        android:paddingLeft="20dp"
+	        android:text="@string/tmpip"
+	        android:textColor="@android:color/white"
+	        android:textSize="30sp"
+	        android:textStyle="bold"/>
+    </LinearLayout>
+    
+    <!-- Right Panel -->
+    <LinearLayout android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:paddingTop="0dp"
+	    android:orientation="vertical">
+			<Button
+			    android:layout_gravity="center_horizontal"
+				android:layout_width="200dp"
+				android:layout_height="100dp"
+				android:layout_marginTop="300dp"
+				android:text="@string/start"
+				android:onClick="startClicked"/>
+    </LinearLayout>
+   
+
+</LinearLayout>

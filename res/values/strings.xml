@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SSIM First App</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    
+    <!-- Main Activity -->
+    <string name="statistics">STATISTICS</string>
+    <string name="distance">Distance</string>
+    <string name="avgspeed">AVG Speed</string>
+    <string name="km">- Km</string>
+    <string name="kmh">- Km/h</string>
+    <string name="title_activity_start">StartActivity</string>
+    
+    <!-- Intro Activity -->
+    <string name="properties">PROPERTIES</string>
+    <string name="start">START</string>
+    <string name="ip">IP</string>
+   	<string name="tmpip">192.168.1.2</string>
+   	<string name="nonetwork">No network available.</string>
+
+</resources>
