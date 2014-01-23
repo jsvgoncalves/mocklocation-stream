@@ -10,48 +10,40 @@ import java.text.DecimalFormat;
 
 import org.json.JSONObject;
 import org.up.fe.jsvgoncalves.ssim.firstapp.utils.JSONHelper;
-import org.up.fe.jsvgoncalves.ssim.firstapp.utils.Utils;
 
+import android.app.Activity;
+import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationRequest;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.SystemClock;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
-import android.widget.TextView;
 
 public class MainActivity extends Activity implements
-	ConnectionCallbacks, OnConnectionFailedListener, com.google.android.gms.location.LocationListener, LocationListener {
+	ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
 
+	// Logtag used in the debugger.
 	public static final String LOG_TAG = "mylog";
 
 	// The name used for all mock locations
     public static final String LOCATION_PROVIDER = "fused";
     
-    // A request to connect to Location Services
-    private LocationRequest mLocationRequest;
-    	
-	LocationClient mLocationClient;
-	LocationListener locationListener;
+    // The location manager used to update the location.
 	LocationManager locationManager;
 	
+	// Statistics
 	private float totalDistance = 0;
-
-	private long lastTime = 0;
-
 	private float speed = 0, avgspeed = 0;
 
+	// Update times.
+	private long lastTime = 0;
 	private float totalTime = 0;
 	
     @Override
@@ -71,6 +63,11 @@ public class MainActivity extends Activity implements
     	locationManager.setTestProviderEnabled(mLocationProvider, true);
     	locationManager.requestLocationUpdates(mLocationProvider, 0, 0, this);
     }
+    
+	@Override
+	public void onDestroy() {
+        super.onDestroy();
+	}
     
 	/**
      * Called by the network async task when a comm is received.
@@ -150,21 +147,12 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onConnectionFailed(ConnectionResult arg0) {
-
+		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void onConnected(Bundle arg0) {
-//		// TODO Auto-generated method stub
-//		 try {
-//			 if(mLocationClient.isConnected()) {
-//				 mLocationClient.setMockMode(true);
-//				 mLocationClient.requestLocationUpdates(mLocationRequest, this);
-//			 }
-//			Log.d(LOG_TAG, "Mocks connected.");
-//	    } catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		// TODO Auto-generated method stub
 	}
 
 	/**
@@ -188,23 +176,6 @@ public class MainActivity extends Activity implements
 	public void onDisconnected() {
 		// TODO Auto-generated method stub
 	}
-	
-	@Override
-	public void onDestroy() {
-		// Turn mock mode off
-        mLocationClient.setMockMode(false);
-
-        // Disconnect from Location Services
-        mLocationClient.disconnect();
-        
-        super.onDestroy();
-
-        // remove it from the location manager
-    	try {
-    		getSystemService(Context.LOCATION_SERVICE);
-    	}
-    	catch (Exception e) {}
-	}
 
 	@Override
 	public void onLocationChanged(Location location) {
@@ -215,17 +186,16 @@ public class MainActivity extends Activity implements
 	@Override
 	public void onProviderDisabled(String provider) {
 		// TODO Auto-generated method stub
-		
 	}
+	
 	@Override
 	public void onProviderEnabled(String provider) {
 		// TODO Auto-generated method stub
-		
 	}
+	
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	/**
@@ -277,6 +247,5 @@ public class MainActivity extends Activity implements
 			}
     	}
     }
-	   
 }
 
