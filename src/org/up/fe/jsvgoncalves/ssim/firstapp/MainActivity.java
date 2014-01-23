@@ -109,18 +109,18 @@ public class MainActivity extends Activity implements
     private void setMockLocation(String lat, String lon) {
     	double latitude = Double.parseDouble(lat);
     	double longitude = Double.parseDouble(lon);
-
+    	Location previousLocation = locationManager.getLastKnownLocation(LOCATION_PROVIDER);
     	Location location = new Location(LocationManager.GPS_PROVIDER);
     	long elapsedTimeNanos = SystemClock.elapsedRealtimeNanos();
         long currentTime = System.currentTimeMillis();
         
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
         location.setElapsedRealtimeNanos(elapsedTimeNanos);
         location.setTime(currentTime);
         location.setAccuracy(16f);
         location.setAltitude(0d);
-        location.setBearing(0f);
-		location.setLatitude(latitude);
-		location.setLongitude(longitude);
+        location.setBearing(previousLocation.bearingTo(location));
 		
 		// provide the new location
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
