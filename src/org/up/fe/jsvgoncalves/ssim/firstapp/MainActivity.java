@@ -46,11 +46,6 @@ public class MainActivity extends Activity implements
 	LocationListener locationListener;
 	LocationManager locationManager;
 	
-	// Intent to send to SendMockLocationService. Contains the type of test to run
-    private Intent mRequestIntent;
-
-	private double update = 0;
-
 	private float totalDistance = 0;
 
 	private long lastTime = 0;
@@ -62,151 +57,80 @@ public class MainActivity extends Activity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Set the layout.
         setContentView(R.layout.activity_main);
         
         // Start the socket communication
         new RetrievePositionTask().execute();
 
+        // Setup the location manager.
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-    	String mocLocationProvider = LocationManager.GPS_PROVIDER;
-    	locationManager.addTestProvider(mocLocationProvider, false, false,
+    	String mLocationProvider = LocationManager.GPS_PROVIDER;
+    	locationManager.addTestProvider(mLocationProvider, false, false,
     			false, false, true, false, false, 0, 5);
-    	locationManager.setTestProviderEnabled(mocLocationProvider, true);
-    	locationManager.requestLocationUpdates(mocLocationProvider, 0, 0, this);
-    	
-        try {
-//	        mLocationRequest = LocationRequest.create();
-//	        mLocationRequest.setInterval(1000);
-//	        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-//	        mLocationRequest.setFastestInterval(1000);
-//
-//	        mLocationClient = new LocationClient(this, this, this);
-//	        mLocationClient.connect();
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
-       
+    	locationManager.setTestProviderEnabled(mLocationProvider, true);
+    	locationManager.requestLocationUpdates(mLocationProvider, 0, 0, this);
     }
+    
 	/**
-     * Method called by the network async task when a comm is received.
-     * @param pos
+     * Called by the network async task when a comm is received.
+     * @param str The JSON string with all the data.
      */
     public void positionUpdated(String str) {
+    	// Create the JSON object and parse the string.
     	JSONObject json = JSONHelper.string2JSON(str);
-//    	t.setText(str + " Km/h");
-
-    	TextView t = (TextView) findViewById(R.id.currentSpeedTextView);
+    	
+    	// Get latitude and longitude values.
     	String lat = JSONHelper.getValue(json, "latitude");
     	String lon = JSONHelper.getValue(json, "longitude");
-    	t.setText(lat + ", " + lon);
-    	//setCustomLocation(lat, lon);
+    	
+    	// Set the new device location.
     	setMockLocation(lat,lon);
-    	Log.d(LOG_TAG, "setted temp location");
+    	
+    	// TODO: Set the other parameters such as speed limit.
+    	// setSpeedLimit(speedLimit);
     } 	
     
-    
-    
+    /**
+     * Overrides the current position with the given latitude and longitude.
+     * TODO: Pass in all the parameters.
+     * @param lat The new latitude.
+     * @param lon The new longitude.
+     */
     private void setMockLocation(String lat, String lon) {
+    	// Parse the values.
     	double latitude = Double.parseDouble(lat);
     	double longitude = Double.parseDouble(lon);
+    	
+    	// Get the previous location.
     	Location previousLocation = locationManager.getLastKnownLocation(LOCATION_PROVIDER);
-    	Location location = new Location(LocationManager.GPS_PROVIDER);
+    	
+    	// Create a new location
+    	Location newLocation = new Location(LocationManager.GPS_PROVIDER);
+    	
+    	// Create the times.
     	long elapsedTimeNanos = SystemClock.elapsedRealtimeNanos();
         long currentTime = System.currentTimeMillis();
         
-        location.setLatitude(latitude);
-        location.setLongitude(longitude);
-        location.setElapsedRealtimeNanos(elapsedTimeNanos);
-        location.setTime(currentTime);
-        location.setAccuracy(16f);
-        location.setAltitude(0d);
-        location.setBearing(previousLocation.bearingTo(location));
-		
-		// provide the new location
-		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, location);
-	}
-
-
-
-	class RetrievePositionTask extends AsyncTask<String, String, String> {
-
-    	protected String doInBackground(String... urls) {
-    		try {
-    			ServerSocket socket = new ServerSocket(5173);
-		    	Socket clientSocket = socket.accept();
-		    	PrintWriter out =
-		    		new PrintWriter(clientSocket.getOutputStream(), true);                   
-		    	BufferedReader in = new BufferedReader(
-		    		new InputStreamReader(clientSocket.getInputStream()));
-		    	String inputLine;
-		    	while ((inputLine = in.readLine()) != null) {
-		    		publishProgress(inputLine);
-		    		out.println("I got your position  (" + inputLine + ") via my Nexus 7");
-		    	}
-		    	return "na";
-    		} catch (Exception e) {
-    			return null;
-    		}
-    	}
-    	
-    	/**
-    	 * Used to update the position instead of the progress.
-    	 */
-    	protected void onProgressUpdate(String... msg) {
-    		positionUpdated(msg[0]);
-		}
-    }
-
-	@Override
-	public void onConnectionFailed(ConnectionResult arg0) {
-
-	}
-
-	@Override
-	public void onConnected(Bundle arg0) {
-		// TODO Auto-generated method stub
-		 try {
-			 if(mLocationClient.isConnected()) {
-				 mLocationClient.setMockMode(true);
-				 mLocationClient.requestLocationUpdates(mLocationRequest, this);
-//				 setCustomLocation();
-			 }
-			Log.d(LOG_TAG, "Mocks connected.");
-	    } catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void setCustomLocation(String latitude, String longitude) {
-		
-		Location previousLoc = mLocationClient.getLastLocation();
-		
-		
-		Location newLocation = new Location(LOCATION_PROVIDER);
-
-		// Convert the string parameters to double.
-		double lat = Double.parseDouble(latitude);
-		double lon = Double.parseDouble(longitude);
-		// Time values to put into the mock Location
-        long elapsedTimeNanos = SystemClock.elapsedRealtimeNanos();
-        long currentTime = System.currentTimeMillis();
+        // Set everything into the new location.
+        newLocation.setLatitude(latitude);
+        newLocation.setLongitude(longitude);
+        newLocation.setElapsedRealtimeNanos(elapsedTimeNanos);
+        newLocation.setTime(currentTime);
+        newLocation.setAccuracy(16f);
+        newLocation.setAltitude(0d);
         
-		newLocation.setElapsedRealtimeNanos(elapsedTimeNanos);
-		newLocation.setTime(currentTime);
-		newLocation.setLatitude(lat);
-		newLocation.setLongitude(lon);
-		newLocation.setAccuracy(16f);
-		newLocation.setAltitude(0d);
-		newLocation.setBearing(0f);
-		mLocationClient.setMockLocation(newLocation);
-		Log.d(LOG_TAG, "Setting mock location " + newLocation.getLatitude() + " , " + newLocation.getLongitude());
+        // Calculate the bearing with the previous location.
+        float bearing = previousLocation.bearingTo(newLocation);
+        newLocation.setBearing(bearing);
 		
-		/** 
-		 * Calculate distances and speeds
-		 */
-		if(previousLoc != null) {
-			float newDistance = previousLoc.distanceTo(newLocation)/1000;
+		// Provide the new location.
+		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, newLocation);
+		
+		// Calculate distances and speeds
+		if(previousLocation != null) {
+			float newDistance = previousLocation.distanceTo(newLocation)/1000;
 			Log.d(LOG_TAG, "This distance: " + newDistance + "m");
 			totalDistance  += newDistance;
 			Log.d(LOG_TAG, "Speed: " + newLocation.getSpeed());
@@ -219,9 +143,34 @@ public class MainActivity extends Activity implements
 	        }
 	        lastTime = currentTime;
 		}
+		
+		// Calls the GUI updater.
 		updateGUI();
 	}
 
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+//		// TODO Auto-generated method stub
+//		 try {
+//			 if(mLocationClient.isConnected()) {
+//				 mLocationClient.setMockMode(true);
+//				 mLocationClient.requestLocationUpdates(mLocationRequest, this);
+//			 }
+//			Log.d(LOG_TAG, "Mocks connected.");
+//	    } catch (Exception e) {
+//			e.printStackTrace();
+//		}
+	}
+
+	/**
+	 * Updates the GUI with the new values.
+	 * Updates average speed, current speed and traveled distance.
+	 */
 	private void updateGUI() {
 		TextView distance = (TextView) findViewById(R.id.distance);
 		DecimalFormat df = new DecimalFormat("#.##");
@@ -252,8 +201,7 @@ public class MainActivity extends Activity implements
 
         // remove it from the location manager
     	try {
-    		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//    		locationManager.removeTestProvider(MockGpsProvider.GPS_MOCK_PROVIDER);
+    		getSystemService(Context.LOCATION_SERVICE);
     	}
     	catch (Exception e) {}
 	}
@@ -279,6 +227,56 @@ public class MainActivity extends Activity implements
 		// TODO Auto-generated method stub
 		
 	}
+	
+	/**
+     * AssyncTask that handles the socket communication.
+     * Calls positionUpdated() when a new string of data is received.
+     * @author João
+     *
+     */
+	class RetrievePositionTask extends AsyncTask<String, String, String> {
+		ServerSocket socket;
+		
+		/**
+		 * Main loop.
+		 */
+    	protected String doInBackground(String... urls) {
+    		try {
+    			socket = new ServerSocket(5173);
+		    	Socket clientSocket = socket.accept();
+		    	PrintWriter out =
+		    		new PrintWriter(clientSocket.getOutputStream(), true);                   
+		    	BufferedReader in = new BufferedReader(
+		    		new InputStreamReader(clientSocket.getInputStream()));
+		    	String inputLine;
+		    	while ((inputLine = in.readLine()) != null) {
+		    		publishProgress(inputLine);
+		    		out.println("I got your position  (" + inputLine + ") via my Nexus 7");
+		    	}
+		    	return "na";
+    		} catch (Exception e) {
+    			return null;
+    		}
+    	}
+    	
+    	/**
+    	 * Used to update the position instead of the progress.
+    	 */
+    	protected void onProgressUpdate(String... msg) {
+    		positionUpdated(msg[0]);
+		}
+    	
+    	@Override
+    	protected void onPostExecute(String result) {
+    		super.onPostExecute(result);
+    		try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    }
 	   
 }
 
