@@ -118,8 +118,13 @@ public class MainActivity extends Activity implements
         newLocation.setAltitude(0d);
         
         // Calculate the bearing with the previous location.
-        float bearing = previousLocation.bearingTo(newLocation);
-        newLocation.setBearing(bearing);
+        if(previousLocation != null) {
+        	float bearing = previousLocation.bearingTo(newLocation);
+        	newLocation.setBearing(bearing);
+        } else {
+        	newLocation.setBearing(0f);
+        }
+        	
 		
 		// Provide the new location.
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
