@@ -16,7 +16,7 @@ After opening the app press the start button to start the socket. Then just send
  }
 ```
 
-Default port: 8000
+Default port: 5173
 
 
 TODO
